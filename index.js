@@ -161,12 +161,14 @@ btnExportar.addEventListener('click', () => {
 
         })
 
-        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob(
+            ["\uFEFF" + csvContent],
+            { type: "text/csv;charset=utf-8;" }
+        );
+        
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = ARQUIVO_PLANILHA; 
-        link.click();
+        
+        window.open(url, "_blank");
     };
 });
 
@@ -195,6 +197,10 @@ vendasBody.addEventListener('click', (e) => {
 
     if (e.target.classList.contains("btn-excluir")) {
         const id = Number(e.target.dataset.id);
-        deletarVenda(id)
+        const confirma = confirm("Tem certeza que deseja excluir?");
+
+        if (confirma) {
+            deletarVenda(id);
+        }    
     }
 });
