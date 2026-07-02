@@ -11,8 +11,6 @@ const totalMesElement = document.getElementById('total-mes');
 const btnSalvar = document.getElementById('btn-salvar');
 const btnExportar = document.getElementById('btn-exportar');
 
-const ARQUIVO_PLANILHA = "planilha_controle_vendas";
-
 let vendaEditandoId = null;
 
 request.onupgradeneeded = function(event) {
@@ -92,10 +90,22 @@ function carregarTabela() {
             tbody.appendChild(tr);
         });
    
-        const total = request.result.reduce((soma, venda) => soma + venda.valorVenda, 0);
+        const total = request.result
+            .filter(venda => venda.formaPagamento === "1/1")
+            .reduce((soma, venda) => soma + venda.valorVenda, 0);
 
         document.getElementById("total-mes").innerText =
             total.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
+            });
+
+        const totalAberto = request.result
+            .filter(venda => venda.formaPagamento === "5/2")
+            .reduce((soma, venda) => soma + venda.valorVenda, 0);
+
+        document.getElementById("total-mes-aberto").innerText =
+            totalAberto.toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL"
             });
@@ -138,19 +148,21 @@ form.addEventListener('submit', async (e) => {
 });
 
 btnExportar.addEventListener('click', () => {
+    const hoje = new Date();
+
     const transaction = db.transaction("vendas", "readonly");
     const store = transaction.objectStore("vendas");
     const index = store.index("anoMesInsercao");
     const request = index.getAll(`${hoje.getFullYear()}-${hoje.getMonth()}`);
 
     request.onsuccess = () => {
-        let csvContent = "data_insercao;codigo_pedido;nome_cliente;forma_pagamento;valor_venda\n";
+        let csvContent = "Data; Código do Pedido; Nome do Cliente; Forma de Pagamento; Valor da Venda\n";
 
         request.result.forEach(venda => {
 
             const valor = venda.valorVenda
-            .toFixed(2)
-            .replace(".", ",");
+                .toFixed(2)
+                .replace(".", ",");           
 
             csvContent +=
                 `"${new Date(venda.dataInsercao).toLocaleDateString("pt-BR")}";` +
@@ -158,8 +170,27 @@ btnExportar.addEventListener('click', () => {
                 `"${venda.nomeCliente}";` +
                 `"${venda.formaPagamento}";` +
                 `"${valor}"\n`;
-
+                
         })
+
+        csvContent += "\n;;; Total Vendido 1/1; Total Vendido 5/2\n";
+
+        const total = request.result
+            .filter(venda => venda.formaPagamento === "1/1")
+            .reduce((soma, venda) => soma + venda.valorVenda, 0)
+            .toFixed(2)
+            .replace(".", ",");
+
+        const totalAberto = request.result
+            .filter(venda => venda.formaPagamento === "5/2")
+            .reduce((soma, venda) => soma + venda.valorVenda, 0)
+            .toFixed(2)
+            .replace(".", ",");
+
+        csvContent +=
+            `;;;` +
+            `"${total}";` +
+            `"${totalAberto}"\n`;
 
         const blob = new Blob(
             ["\uFEFF" + csvContent],
@@ -168,7 +199,10 @@ btnExportar.addEventListener('click', () => {
         
         const url = URL.createObjectURL(blob);
         
-        window.open(url, "_blank");
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "planilha-controle-vendas.csv";
+        link.click();
     };
 });
 

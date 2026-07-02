@@ -74,18 +74,21 @@ header {
 
 #btn-salvar:hover { background-color: #000000; }
 
-.total-vendido {
+.total-vendido, .total-vendido-aberto  {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
     width: 100%;
-    margin-bottom: 22px;
 }
 
-.total-vendido p {
+.total-vendido p, .total-vendido-aberto p {
     font-size: 12pt;
     color: #ff0101;
+}
+
+.total-vendido-aberto {
+    padding-bottom: 22px;
 }
 
 #btn-exportar {
