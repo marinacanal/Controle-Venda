@@ -18,7 +18,6 @@ header {
 }
 
 .form-section {
-    background: #f3f3f3;
     border-radius: 8px;
     margin-bottom: 25px;
 }
@@ -80,43 +79,63 @@ header {
     align-items: center;
     font-weight: 600;
     width: 100%;
+    padding: 3px 0;
 }
 
-.total-vendido p, .total-vendido-aberto p {
+.total-vendido p {
     font-size: 12pt;
-    color: #ff0101;
+    color: #168500;
 }
 
 .total-vendido-aberto {
-    padding-bottom: 22px;
+    padding-bottom: 23px;
+}
+
+.total-vendido-aberto p {
+    font-size: 12pt;
+    color: #cc3000;
+}
+
+.vendas-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 13px;
+}
+
+.vendas-group h2 {
+    color: #000000;
+    font-size: 12pt;
 }
 
 #btn-exportar {
-    padding: 10px;
-    background-color: #009600;
-    color: white;
-    border: none;
-    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 40px;
+    height: 40px;
+    padding: 0;
+
+    background-color: #f8f8f8;
     font-weight: 600;
     cursor: pointer;
 
-    display: block;       
-    margin-left: auto;
-    margin-bottom: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
 }
 
-#btn-exportar:hover { background-color: #30b80e; }
+#btn-exportar:hover { border: 1px solid black; }
 
-.vendas-section h2 {
-    color: #000000;
-    font-size: 10pt;
-    margin-bottom: 12px;
+#btn-exportar img {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
 }
 
 table { width: 100%; border-collapse: collapse; }
 
 table th {
-    background-color: #f1f5f9;
     color: #000000;
     padding: 5px;
     border-bottom: 2px solid #e2e8f0;
