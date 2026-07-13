@@ -70,7 +70,10 @@ function carregarTabela() {
     const request = index.getAll(`${hoje.getFullYear()}-${hoje.getMonth()}`);
 
     request.onsuccess = () => {
-        request.result.forEach(venda => {
+        let vendas = request.result;
+        vendas.sort((a, b) => a.codigoPedido - b.codigoPedido);
+
+        vendas.forEach(venda => {
             const tr = document.createElement("tr");
 
             tr.innerHTML = `
@@ -90,7 +93,7 @@ function carregarTabela() {
             tbody.appendChild(tr);
         });
    
-        const total = request.result
+        const total = vendas
             .filter(venda => venda.formaPagamento === "1/1")
             .reduce((soma, venda) => soma + venda.valorVenda, 0);
 
@@ -100,7 +103,7 @@ function carregarTabela() {
                 currency: "BRL"
             });
 
-        const totalAberto = request.result
+        const totalAberto = vendas
             .filter(venda => venda.formaPagamento === "5/2")
             .reduce((soma, venda) => soma + venda.valorVenda, 0);
 
@@ -156,9 +159,12 @@ btnExportar.addEventListener('click', () => {
     const request = index.getAll(`${hoje.getFullYear()}-${hoje.getMonth()}`);
 
     request.onsuccess = () => {
+        let vendas = request.result;
+        vendas.sort((a, b) => a.codigoPedido - b.codigoPedido);
+
         let csvContent = "Data; Código do Pedido; Nome do Cliente; Forma de Pagamento; Valor da Venda\n";
 
-        request.result.forEach(venda => {
+        vendas.forEach(venda => {
 
             const valor = venda.valorVenda
                 .toFixed(2)
@@ -175,13 +181,13 @@ btnExportar.addEventListener('click', () => {
 
         csvContent += "\n;;; Total Vendido 1/1; Total Vendido 5/2\n";
 
-        const total = request.result
+        const total = vendas
             .filter(venda => venda.formaPagamento === "1/1")
             .reduce((soma, venda) => soma + venda.valorVenda, 0)
             .toFixed(2)
             .replace(".", ",");
 
-        const totalAberto = request.result
+        const totalAberto = vendas
             .filter(venda => venda.formaPagamento === "5/2")
             .reduce((soma, venda) => soma + venda.valorVenda, 0)
             .toFixed(2)
